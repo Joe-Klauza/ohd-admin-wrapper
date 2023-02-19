@@ -1,0 +1,456 @@
+<div class="d-flex flex-column horizontal-expand mb-3">
+  <div class="container-fluid d-flex justify-content-center bg-primary my-1">
+    <h3 class="py-2">Server Config</h3>
+  </div>
+  <div class="d-flex flex-column horizontal-expand justify-content-between">
+
+    <!-- Server Config Selection -->
+    <div class="d-flex justify-content-between horizontal-expand bg-secondary my-1">
+      <div class="p-2 col-2">Config ID</div>
+      <div class="p-2 col-6">
+        <input disabled id="id" type="text" class="form-control server-config-text-input disabled" placeholder="<%= @config['id'] || 'Not Yet Created' rescue binding.pry %>">
+      </div>
+      <% if @config['id'] %>
+      <div class="p-2 col justify-content-beginning">
+        <button type="button" class="btn btn-danger m-1 ml-4" onclick="deleteServerConfig(`<%= @config['id'] %>`);">Delete Config</button>
+      </div>
+      <div class="p-2 col justify-content-end">
+        <button type="button" class="btn btn-info m-1 ml-4" onclick="download('/download-server-config?config-id=<%= @config['id'] %>');">Download Files</button>
+      </div>
+      <% end %>
+    </div>
+    <div class="d-flex justify-content-between horizontal-expand bg-secondary my-1">
+      <div class="p-2 col-2">Config Name</div>
+      <div class="p-2 col">
+        <input id="server-config-name" type="text" class="form-control server-config-text-input col-6" placeholder="<%= @config['server-config-name'] || 'Default' rescue binding.pry %>">
+        <ul class="nav nav-pills horizontal-expand">
+          <li class="nav-item dropdown horizontal-expand text-center">
+            <a class="nav-link dropdown-toggle btn btn-sm btn-primary" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="true" onclick="loadServerConfigs();">Configs</a>
+            <div class="dropdown-menu horizontal-expand" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
+              <div id='server-configs' class="horizontal-expand d-flex flex-column">
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="p-2 col-4 justify-content-between">
+        <div class="p-2 col-4">
+          <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="fillFromPlaceholder('#server-config-name');">Fill</button>
+          <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="copyToClipboard('#server-config-name');">Copy</button>
+        </div>
+        <div class="d-flex col-4 justify-content-end">
+          <button type="button" class="btn btn-info m-1 ml-4" onclick="saveServerConfig();">Save All</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Server Hostname -->
+    <div class="d-flex justify-content-between horizontal-expand bg-light my-1">
+      <div class="p-2 col-2">Server Name</div>
+      <div class="p-2 col">
+        <input id="server_name" type="text" class="form-control server-config-text-input" placeholder="<%= @config['server_name'] %>">
+      </div>
+      <div class="p-2 col-1">
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="fillFromPlaceholder('#server_name');">Fill</button>
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="copyToClipboard('#server_name');">Copy</button>
+      </div>
+      <div class="p-2 col-4 justify-content-end">
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary m-1" onclick="undoServerConfig($('#id').attr('placeholder'), 'server_name');">Undo</button>
+          <button type="button" class="btn btn-info m-1 ml-4" onclick="setServerConfig($('#id').attr('placeholder'), 'server_name', $('#server_name').val());">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Server Password -->
+    <div class="d-flex justify-content-between horizontal-expand bg-light my-1">
+      <div class="p-2 col-2">Server Password</div>
+      <div class="p-2 col-3">
+        <input id="server_password" type="text" class="form-control server-config-text-input blur" placeholder="<%= @config['server_password'] %>">
+      </div>
+      <div class="p-2 col-3 d-flex justify-content-start">
+        <button type="button" class="btn btn-sm btn-outline-warning horizontal-expand mx-1" onclick="generatePassword('#server_password');">Generate</button>
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="fillFromPlaceholder('#server_password');">Fill</button>
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="copyToClipboard('#server_password', true);">Copy</button>
+        <button id="server_password_revealer" type="button" class="btn btn-sm btn-success horizontal-expand mr-4" onclick="revealHide('#server_password', '#server_password_revealer');">Reveal</button>
+      </div>
+      <div class="p-2 col-4 justify-content-end">
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary m-1" onclick="undoServerConfig($('#id').attr('placeholder'), 'server_password');">Undo</button>
+          <button type="button" class="btn btn-info m-1 ml-4" onclick="setServerConfig($('#id').attr('placeholder'), 'server_password', $('#server_password').val());">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Port -->
+    <div class="d-flex justify-content-between horizontal-expand bg-light my-1">
+      <div class="p-2 col-2">Game Port</div>
+      <div class="p-2 col">
+        <input id="server_game_port" type="text" class="form-control server-config-text-input" placeholder="<%= @config['server_game_port'] %>">
+      </div>
+      <div class="p-2 col-1">
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="fillFromPlaceholder('#server_game_port');">Fill</button>
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="copyToClipboard('#server_game_port');">Copy</button>
+      </div>
+      <div class="p-2 col-4 justify-content-end">
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary m-1" onclick="undoServerConfig($('#id').attr('placeholder'), 'server_game_port');">Undo</button>
+          <button type="button" class="btn btn-info m-1 ml-4" onclick="setServerConfig($('#id').attr('placeholder'), 'server_game_port', $('#server_game_port').val());">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Query Port -->
+    <div class="d-flex justify-content-between horizontal-expand bg-light my-1">
+      <div class="p-2 col-2">Query Port</div>
+      <div class="p-2 col">
+        <input id="server_query_port" type="text" class="form-control server-config-text-input" placeholder="<%= @config['server_query_port'] %>">
+      </div>
+      <div class="p-2 col-1">
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="fillFromPlaceholder('#server_query_port');">Fill</button>
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="copyToClipboard('#server_query_port');">Copy</button>
+      </div>
+      <div class="p-2 col-4 justify-content-end">
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary m-1" onclick="undoServerConfig($('#id').attr('placeholder'), 'server_query_port');">Undo</button>
+          <button type="button" class="btn btn-info m-1 ml-4" onclick="setServerConfig($('#id').attr('placeholder'), 'server_query_port', $('#server_query_port').val());">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RCON Port -->
+    <div class="d-flex justify-content-between horizontal-expand bg-light my-1">
+      <div class="p-2 col-2">RCON Port</div>
+      <div class="p-2 col">
+        <input id="server_rcon_port" type="text" class="form-control server-config-text-input" placeholder="<%= @config['server_rcon_port'] %>">
+      </div>
+      <div class="p-2 col-1">
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="fillFromPlaceholder('#server_rcon_port');">Fill</button>
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="copyToClipboard('#server_rcon_port');">Copy</button>
+      </div>
+      <div class="p-2 col-4 justify-content-end">
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary m-1" onclick="undoServerConfig($('#id').attr('placeholder'), 'server_rcon_port');">Undo</button>
+          <button type="button" class="btn btn-info m-1 ml-4" onclick="setServerConfig($('#id').attr('placeholder'), 'server_rcon_port', $('#server_rcon_port').val());">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RCON Password -->
+    <div class="d-flex justify-content-between horizontal-expand bg-light my-1">
+      <div class="p-2 col-2">RCON Password</div>
+      <div class="p-2 col-3">
+        <input id="server_rcon_password" type="text" class="form-control server-config-text-input blur" placeholder="<%= @config['server_rcon_password'] %>">
+      </div>
+      <div class="p-2 col-3 d-flex justify-content-start">
+        <button type="button" class="btn btn-sm btn-outline-warning horizontal-expand mx-1" onclick="generatePassword('#server_rcon_password');">Generate</button>
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="fillFromPlaceholder('#server_rcon_password');">Fill</button>
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="copyToClipboard('#server_rcon_password', true);">Copy</button>
+        <button id="server_rcon_password_revealer" type="button" class="btn btn-sm btn-success horizontal-expand mr-4" onclick="revealHide('#server_rcon_password', '#server_rcon_password_revealer');">Reveal</button>
+      </div>
+      <div class="p-2 col-4 justify-content-end">
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary m-1" onclick="undoServerConfig($('#id').attr('placeholder'), 'server_rcon_password');">Undo</button>
+          <button type="button" class="btn btn-info m-1 ml-4" onclick="setServerConfig($('#id').attr('placeholder'), 'server_rcon_password', $('#server_rcon_password').val());">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Player join message -->
+    <div class="d-flex justify-content-between horizontal-expand bg-light my-1">
+      <div class="p-2 col-3 d-flex justify-content-between"><div>Player join message</div><button type="button" class="btn btn-sm btn-secondary my-1 mx-2" data-toggle="tooltip" data-placement="left" title="" data-html="true" data-original-title="<div class='d-inline-block'>Uses RCON say to send a welcome message 20 seconds after a player joins.<br>Variables: <span class='monospace-font'><b>${player_name}</b></span>, <span class='monospace-font'><b>${player_id}</b></span></div>" style="font-size: 125%;font-weight: bold;">?</button></div>
+      <div class="p-2 col">
+        <input id="join_message" type="text" class="form-control server-config-text-input" placeholder="<%= @config['join_message'] %>">
+      </div>
+      <div class="p-2 col-1">
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="fillFromPlaceholder('#join_message');">Fill</button>
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="copyToClipboard('#join_message');">Copy</button>
+      </div>
+      <div class="p-2 col-4 justify-content-end">
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary m-1" onclick="undoServerConfig($('#id').attr('placeholder'), 'join_message');">Undo</button>
+          <button type="button" class="btn btn-info m-1 ml-4" onclick="setServerConfig($('#id').attr('placeholder'), 'join_message', $('#join_message').val());">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Player leave message -->
+    <div class="d-flex justify-content-between horizontal-expand bg-light my-1">
+      <div class="p-2 col-3 d-flex justify-content-between"><div>Player leave message</div><button type="button" class="btn btn-sm btn-secondary my-1 mx-2" data-toggle="tooltip" data-placement="left" title="" data-html="true" data-original-title="<div class='d-inline-block'>Uses RCON say to send a notification message when a player leaves.<br>Variables: <span class='monospace-font'><b>${player_name}</b></span>, <span class='monospace-font'><b>${player_id}</b></span></div>" style="font-size: 125%;font-weight: bold;">?</button></div>
+      <div class="p-2 col">
+        <input id="leave_message" type="text" class="form-control server-config-text-input" placeholder="<%= @config['leave_message'] %>">
+      </div>
+      <div class="p-2 col-1">
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="fillFromPlaceholder('#leave_message');">Fill</button>
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="copyToClipboard('#leave_message');">Copy</button>
+      </div>
+      <div class="p-2 col-4 justify-content-end">
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary m-1" onclick="undoServerConfig($('#id').attr('placeholder'), 'leave_message');">Undo</button>
+          <button type="button" class="btn btn-info m-1 ml-4" onclick="setServerConfig($('#id').attr('placeholder'), 'leave_message', $('#leave_message').val());">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin join message -->
+    <div class="d-flex justify-content-between horizontal-expand bg-light my-1">
+      <div class="p-2 col-3 d-flex justify-content-between"><div>Admin join message</div><button type="button" class="btn btn-sm btn-secondary my-1 mx-2" data-toggle="tooltip" data-placement="left" title="" data-html="true" data-original-title="<div class='d-inline-block'>Uses RCON say to send a welcome message 20 seconds after a player joins.<br>Variables: <span class='monospace-font'><b>${player_name}</b></span>, <span class='monospace-font'><b>${player_id}</b></span></div>" style="font-size: 125%;font-weight: bold;">?</button></div>
+      <div class="p-2 col">
+        <input id="admin_join_message" type="text" class="form-control server-config-text-input" placeholder="<%= @config['admin_join_message'] %>">
+      </div>
+      <div class="p-2 col-1">
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="fillFromPlaceholder('#admin_join_message');">Fill</button>
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="copyToClipboard('#admin_join_message');">Copy</button>
+      </div>
+      <div class="p-2 col-4 justify-content-end">
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary m-1" onclick="undoServerConfig($('#id').attr('placeholder'), 'admin_join_message');">Undo</button>
+          <button type="button" class="btn btn-info m-1 ml-4" onclick="setServerConfig($('#id').attr('placeholder'), 'admin_join_message', $('#admin_join_message').val());">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin leave message -->
+    <div class="d-flex justify-content-between horizontal-expand bg-light my-1">
+      <div class="p-2 col-3 d-flex justify-content-between"><div>Admin leave message</div><button type="button" class="btn btn-sm btn-secondary my-1 mx-2" data-toggle="tooltip" data-placement="left" title="" data-html="true" data-original-title="<div class='d-inline-block'>Uses RCON say to send a notification message when a player leaves.<br>Variables: <span class='monospace-font'><b>${player_name}</b></span>, <span class='monospace-font'><b>${player_id}</b></span></div>" style="font-size: 125%;font-weight: bold;">?</button></div>
+      <div class="p-2 col">
+        <input id="admin_leave_message" type="text" class="form-control server-config-text-input" placeholder="<%= @config['admin_leave_message'] %>">
+      </div>
+      <div class="p-2 col-1">
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="fillFromPlaceholder('#admin_leave_message');">Fill</button>
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="copyToClipboard('#admin_leave_message');">Copy</button>
+      </div>
+      <div class="p-2 col-4 justify-content-end">
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary m-1" onclick="undoServerConfig($('#id').attr('placeholder'), 'admin_leave_message');">Undo</button>
+          <button type="button" class="btn btn-info m-1 ml-4" onclick="setServerConfig($('#id').attr('placeholder'), 'admin_leave_message', $('#admin_leave_message').val());">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RCON Hang Recovery -->
+    <div class="d-flex justify-content-between horizontal-expand bg-light my-1">
+      <div class="p-2 col-3 d-flex justify-content-between"><div>Hang Recovery</div><button type="button" class="btn btn-sm btn-secondary my-1 mx-2" data-toggle="tooltip" data-placement="left" title="" data-html="true" data-original-title="Automatically hard-restart this server if it fails local RCON queries for over 60 seconds." style="font-size: 125%;font-weight: bold;">?</button></div>
+      <div class="p-2 col"></div>
+      <div class="p-2 col-3 justify-content-start">
+          <div class="custom-control custom-switch p-2 ml-5">
+            <input type="checkbox" class="custom-control-input server-config-checkbox-input" id="hang_recovery" <%= 'checked' if @config['hang_recovery'].to_s.casecmp('true').zero? %>>
+            <label class="custom-control-label" for="hang_recovery">Enable Automatic Hang Recovery</label>
+          </div>
+      </div>
+      <div class="p-2 col-2 justify-content-end">
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary m-1" onclick="setServerConfig($('#id').attr('placeholder'), 'hang_recovery', !$('#hang_recovery')[0].checked); toggleChecked('#hang_recovery');">Undo</button>
+          <button type="button" class="btn btn-info m-1 ml-4" onclick="setServerConfig($('#id').attr('placeholder'), 'hang_recovery', $('#hang_recovery')[0].checked);">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Query Failure Recovery -->
+    <div class="d-flex justify-content-between horizontal-expand bg-light my-1">
+      <div class="p-2 col-3 d-flex justify-content-between"><div>Query Recovery</div><button type="button" class="btn btn-sm btn-secondary my-1 mx-2" data-toggle="tooltip" data-placement="left" title="" data-html="true" data-original-title="Automatically hard-restart this server if it fails local Server Query queries for over 30 seconds." style="font-size: 125%;font-weight: bold;">?</button></div>
+      <div class="p-2 col"></div>
+      <div class="p-2 col-3 justify-content-start">
+          <div class="custom-control custom-switch p-2 ml-5">
+            <input type="checkbox" class="custom-control-input server-config-checkbox-input" id="query_recovery" <%= 'checked' if @config['query_recovery'].to_s.casecmp('true').zero? %>>
+            <label class="custom-control-label" for="query_recovery">Enable Automatic Query Recovery</label>
+          </div>
+      </div>
+      <div class="p-2 col-2 justify-content-end">
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary m-1" onclick="setServerConfig($('#id').attr('placeholder'), 'query_recovery', !$('#query_recovery')[0].checked); toggleChecked('#query_recovery');">Undo</button>
+          <button type="button" class="btn btn-info m-1 ml-4" onclick="setServerConfig($('#id').attr('placeholder'), 'query_recovery', $('#query_recovery')[0].checked);">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Max Players -->
+    <div class="d-flex justify-content-between horizontal-expand bg-light my-1">
+      <div class="p-2 col-2">Max Players</div>
+      <div class="p-2 col-1">Visible:</div>
+      <div class="p-2 col-1">
+        <input id="server_max_players" type="text" class="form-control server-config-text-input" placeholder="<%= @config['server_max_players'] %>">
+      </div>
+      <div class="p-2 col-2">
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary m-1" onclick="undoServerConfig($('#id').attr('placeholder'), 'server_max_players');">Undo</button>
+          <button type="button" class="btn btn-info m-1 ml-4" onclick="setServerConfig($('#id').attr('placeholder'), 'server_max_players', $('#server_max_players').val());">Save</button>
+        </div>
+      </div>
+      <div class="p-2 col-1">Actual:</div>
+      <div class="p-2 col-1">
+        <input id="server_max_players_override" type="text" class="form-control server-config-text-input" placeholder="<%= @config['server_max_players_override'] %>">
+      </div>
+      <div class="p-2 col-2">
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary m-1" onclick="undoServerConfig($('#id').attr('placeholder'), 'server_max_players_override');">Undo</button>
+          <button type="button" class="btn btn-info m-1 ml-4" onclick="setServerConfig($('#id').attr('placeholder'), 'server_max_players_override', $('#server_max_players_override').val());">Save</button>
+        </div>
+      </div>
+      <div class="col">
+      </div>
+    </div>
+
+    <!-- Default Map -->
+    <div class="d-flex justify-content-between horizontal-expand bg-light my-1">
+      <div class="p-2 col-2">Default Map</div>
+      <div class="p-2 col horizontal-expand">
+        <input id="server_default_map" type="text" class="form-control server-config-text-input col-6" placeholder="<%= @config['server_default_map'] %>">
+        <ul class="nav nav-pills col-6">
+          <li class="nav-item dropdown horizontal-expand text-center">
+            <a class="nav-link dropdown-toggle btn btn-sm btn-primary" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="true">Maps</a>
+            <div id="maplist" class="dropdown-menu horizontal-expand" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
+              <%= erb :maplist %>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="p-2 col-2 justify-content-end">
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary m-1" onclick="undoServerConfig($('#id').attr('placeholder'), 'server_default_map');">Undo</button>
+          <button type="button" class="btn btn-info m-1 ml-4" onclick="setServerConfig($('#id').attr('placeholder'), 'server_default_map', $('#server_default_map').val());">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Config files -->
+    <div class="d-flex flex-column justify-content-start horizontal-expand my-1 bg-light">
+      <div class="d-flex justify-content-between horizontal-expand">
+        <div class="ml-4 p-2 col-2 horizontal-expand">Config Files</div>
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#game-ini-tab"><span data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Matching values from above will overwrite those below.">Game.ini</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#engine-ini-tab">Engine.ini</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#game-user-settings-ini-tab">GameUserSettings.ini</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#admins-cfg-tab">Admins.cfg</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#mapcycle-cfg-tab"><span data-toggle="tooltip" data-placement="left" title="" data-original-title="Place scenarios here, one per line. These scenarios appear in the in-game map vote.">MapCycle.cfg</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" data-toggle="tab" href="#bans-cfg-tab"><span data-toggle="tooltip" data-placement="left" title="" data-original-title="We use one master Bans.cfg. Changing this will overwrite all your bans. Servers will need RELOADSERVERCONFIG command to persist.">Bans.cfg</span></a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" data-toggle="tab" href="#notes-txt-tab"><span data-toggle="tooltip" data-placement="left" title="" data-original-title="Keep your notes for this server here. This file does not affect the server.">Notes</span></a>
+          </li>
+        </ul>
+      </div>
+      <div class="d-flex justify-content-between horizontal-expand align-items-start">
+        <div id="config-files-tab-content" class="tab-content col-11 blur">
+          <div class="tab-pane fade horizontal-expand active show" id="game-ini-tab">
+            <textarea id="game-ini" class="m-2 config-file" file="game_ini"><%= @game_ini %></textarea>
+          </div>
+          <div class="tab-pane fade horizontal-expand" id="engine-ini-tab">
+            <textarea id="engine-ini" class="m-2 config-file" file="engine_ini"><%= @engine_ini %></textarea>
+          </div>
+          <div class="tab-pane fade horizontal-expand" id="game-user-settings-ini-tab">
+            <textarea id="engine-ini" class="m-2 config-file" file="game_user_settings_ini"><%= @game_user_settings_ini %></textarea>
+          </div>
+          <div class="tab-pane fade horizontal-expand" id="admins-cfg-tab">
+            <textarea id="admins-cfg" class="m-2 config-file" file="admins_cfg"><%= @admins_cfg %></textarea>
+          </div>
+          <div class="tab-pane fade horizontal-expand" id="mapcycle-cfg-tab">
+            <textarea id="mapcycle-cfg" class="m-2 config-file" file="map_cycle_cfg"><%= @mapcycle_cfg %></textarea>
+          </div>
+          <div class="tab-pane fade horizontal-expand" id="bans-cfg-tab">
+            <textarea id="bans-cfg" class="m-2 config-file" file="bans_cfg"><%= @bans_cfg %></textarea>
+          </div>
+          <div class="tab-pane fade horizontal-expand" id="notes-txt-tab">
+            <textarea id="notes-txt" class="m-2 config-file" file="notes_txt"><%= @notes_txt %></textarea>
+          </div>
+        </div>
+        <div class="d-flex flex-column p-2 col-1 ml-1 justify-content-end">
+          <button id="config_file_revealer" type="button" class="btn btn-success horizontal-expand mr-4 m-1" onclick="revealHide('#config-files-tab-content', '#config_file_revealer');">Reveal</button>
+          <button type="button" class="btn btn-info horizontal-expand mr-4 m-1" onclick="writeConfigFile($('#id').attr('placeholder'));">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Travel Arguments -->
+    <div class="d-flex justify-content-between horizontal-expand bg-light my-1">
+      <div class="p-2 col-2 justify-content-between"><div>Custom Travel Arguments</div><button type="button" class="btn btn-sm btn-secondary my-1 mx-2" data-toggle="tooltip" data-placement="left" title="" data-html="true" data-original-title="Set this to use additional travel arguments (?Key=val) unsupported by OHDAW. Args delimited by unquoted spaces." style="font-size: 125%;font-weight: bold;">?</button></div>
+      <div class="p-2 col">
+        <input id="server_custom_travel_args" type="text" class="form-control server-config-text-input" placeholder="<%= @config['server_custom_travel_args'] %>">
+      </div>
+      <div class="p-2 col-1">
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="fillFromPlaceholder('#server_custom_travel_args');">Fill</button>
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="copyToClipboard('#server_custom_travel_args');">Copy</button>
+      </div>
+      <div class="p-2 col-4 justify-content-end">
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary m-1" onclick="undoServerConfig($('#id').attr('placeholder'), 'server_custom_travel_args');">Undo</button>
+          <button type="button" class="btn btn-info m-1 ml-4" onclick="setServerConfig($('#id').attr('placeholder'), 'server_custom_travel_args', $('#server_custom_travel_args').val());">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Server Arguments -->
+    <div class="d-flex justify-content-between horizontal-expand bg-light my-1">
+      <div class="p-2 col-2 justify-content-between"><div>Custom Server Arguments</div><button type="button" class="btn btn-sm btn-secondary my-1 mx-2" data-toggle="tooltip" data-placement="left" title="" data-html="true" data-original-title="Set this to use additional server arguments (-Key=val) unsupported by OHDAW. Args delimited by unquoted spaces." style="font-size: 125%;font-weight: bold;">?</button></div>
+      <div class="p-2 col">
+        <input id="server_custom_server_args" type="text" class="form-control server-config-text-input" placeholder="<%= @config['server_custom_server_args'] %>">
+      </div>
+      <div class="p-2 col-1">
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="fillFromPlaceholder('#server_custom_server_args');">Fill</button>
+        <button type="button" class="btn btn-sm btn-outline-info horizontal-expand mx-1" onclick="copyToClipboard('#server_custom_server_args');">Copy</button>
+      </div>
+      <div class="p-2 col-4 justify-content-end">
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary m-1" onclick="undoServerConfig($('#id').attr('placeholder'), 'server_custom_server_args');">Undo</button>
+          <button type="button" class="btn btn-info m-1 ml-4" onclick="setServerConfig($('#id').attr('placeholder'), 'server_custom_server_args', $('#server_custom_server_args').val());">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RCON Enabled -->
+    <div class="d-flex justify-content-between horizontal-expand my-1" style="background-color: #111;">
+      <div class="p-2 col-2 justify-content-between">RCON <button type="button" class="btn btn-sm btn-secondary my-1 mx-2" data-toggle="tooltip" data-placement="left" title="" data-html="true" data-original-title="We need this to do most things; it's best left enabled." style="font-size: 125%;font-weight: bold;">?</button></div>
+      <div class="col-2 justify-content-end">
+        <div class="custom-control custom-switch p-2 mr-2">
+          <input type="checkbox" class="custom-control-input server-config-checkbox-input" id="server_rcon_enabled"<%=' checked' if @config['server_rcon_enabled'].to_s.casecmp('True').zero? %>>
+          <label class="custom-control-label" for="server_rcon_enabled">Enable RCON</label>
+        </div>
+      </div>
+      <div class="col-2 justify-content-end">
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary m-1" onclick="setServerConfig($('#id').attr('placeholder'), 'server_rcon_enabled', !$('#server_rcon_enabled')[0].checked); toggleChecked('#server_rcon_enabled');">Undo</button>
+          <button type="button" class="btn btn-info m-1 ml-4" onclick="setServerConfig($('#id').attr('placeholder'), 'server_rcon_enabled', $('#server_rcon_enabled')[0].checked);">Save</button>
+        </div>
+      </div>
+      <div class="p-2 col"></div>
+    </div>
+
+    <!-- Game Mode -->
+    <div class="d-flex justify-content-between horizontal-expand my-1" style="background-color: #111;">
+      <div class="p-2 col-2 justify-content-between">Game Mode<button type="button" class="btn btn-sm btn-secondary my-1 mx-2" data-toggle="tooltip" data-placement="left" title="" data-html="true" data-original-title="" style="font-size: 125%;font-weight: bold;">?</button></div>
+      <div class="p-2 col">
+        <input id="server_game_mode" type="text" class="form-control server-config-text-input col-6" placeholder="<%= @config['server_game_mode'] %>">
+        <ul class="nav nav-pills col-6">
+          <li class="nav-item dropdown horizontal-expand text-center">
+            <a class="nav-link dropdown-toggle btn btn-sm btn-primary" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="true">Game Modes</a>
+            <div class="dropdown-menu horizontal-expand" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
+              <% GAME_MODES.sort.each do |mode| %>
+              <a class="dropdown-item" onclick="$(`#server_game_mode`).val('<%= mode %>')"><%= mode %></a>
+              <% end %>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" onclick="$(`#server_game_mode`).val('None')">None</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="p-2 col-4 justify-content-end">
+        <div class="d-flex justify-content-between">
+          <button type="button" class="btn btn-secondary m-1" onclick="undoServerConfig($('#id').attr('placeholder'), 'server_game_mode');">Undo</button>
+          <button type="button" class="btn btn-info m-1 ml-4" onclick="setServerConfig($('#id').attr('placeholder'), 'server_game_mode', $('#server_game_mode').val());">Save</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

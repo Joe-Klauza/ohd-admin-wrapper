@@ -1,0 +1,66 @@
+<% at_least_one_server = false %>
+<% at_least_one_server = true unless @daemons.values.compact.empty? && @monitors.compact.empty? %>
+<% @daemons.reject{|_,d| d.nil? }.sort_by{ |_, d| d.config['server_name'] }.each do |id, daemon| %>
+  <% @id = id %>
+  <% server_running = daemon.server_running? %>
+  <% @monitor = daemon.monitor rescue nil %>
+  <% @info = @monitor.info rescue nil %>
+
+  <!-- Server List -->
+  <div class="d-flex justify-content-start horizontal-expand bg-light m-1">
+    <div class="ml-4 p-2 col-4 badge badge-primary"><%= daemon.frozen_config['server_name'] %></div>
+    <div class="p-2 col-2 d-flex flex-column" style="font-size: 80%">
+      <div style="white-space: pre;">Game Port: <span id="game-port"><%= daemon.active_game_port %></span></div>
+      <div style="white-space: pre;">Query Port: <span id="rcon-port"><%= daemon.active_query_port %></span></div>
+      <div style="white-space: pre;">RCON Port: <span id="rcon-port"><%= daemon.active_rcon_port %></span></div>
+    </div>
+    <div class="p-2 col justify-content-center d-flex flex-column" style="font-size: 75%">
+      <% @pid = daemon.game_pid %>
+      <% process = Sys::ProcTable.ps(pid: @pid) if @pid %>
+      <% threads = (WINDOWS ? process.thread_count : process.nlwp) if process %>
+      <% @threads = threads || 0 %>
+      <%= erb :threads %>
+    </div>
+    <div class="ml-4 p-2 col-1 d-flex flex-column">
+      <div class="monospace-font horizontal-expand text-center badge badge-<%= server_running ? 'success' : 'danger' %>"><%= server_running ? 'ON' : 'OFF' %></div>
+      <% if is_admin? %>
+        <div class="horizontal-expand">
+          <button type="button" class="m-1 monospace-font horizontal-expand text-center badge btn-success" data-toggle="tooltip" data-placement="bottom" title="" data-html="true" data-original-title="Start" onclick="serverControl('start', '<%= @id %>', $('#server-config-name').val() || $('#server-config-name').attr('placeholder'));">▶</button>
+          <button type="button" class="m-1 monospace-font horizontal-expand text-center badge btn-warning" data-toggle="tooltip" data-placement="bottom" title="" data-html="true" data-original-title="Restart" onclick="serverControl('restart', '<%= @id %>', $('#server-config-name').val() || $('#server-config-name').attr('placeholder'));">⭮</button>
+          <button type="button" class="m-1 monospace-font horizontal-expand text-center badge btn-danger" data-toggle="tooltip" data-placement="bottom" title="" data-html="true" data-original-title="Stop" onclick="serverControl('stop', '<%= @id %>', $('#server-config-name').val() || $('#server-config-name').attr('placeholder'));">■</button>
+        </div>
+      <% end %>
+  </div>
+  </div>
+  <div class="horizontal-expand">
+    <%= erb :'monitoring-details' %>
+  </div>
+<% end %>
+
+<% @monitors.each do |id, monitor| %>
+  <% @id = id %>
+  <% @monitor = monitor %>
+  <% @info = @monitor.info rescue nil %>
+  <!-- Remote Server List -->
+  <div class="d-flex justify-content-start horizontal-expand bg-light m-1">
+    <div class="ml-4 p-2 col-4 badge badge-primary"><%= @info[:a2s_info]['name'] rescue "Unknown Name (#{@monitor.name})" %></div>
+    <div class="p-2 col-2 d-flex flex-column" style="font-size: 80%">
+      <div style="white-space: pre;">Query Port: <span id="rcon-port"><%= @monitor.query_port %></span></div>
+      <div style="white-space: pre;">RCON Port: <span id="rcon-port"><%= @monitor.rcon_port %></span></div>
+    </div>
+    <div class="p-2 col justify-content-center d-flex flex-column" style="font-size: 75%">
+      <% @pid = nil %>
+      <%= erb :threads %>
+    </div>
+    <div class="ml-4 p-2 col-1"><span class="monospace-font horizontal-expand text-center badge badge-<%= !@info[:server_down] ? 'success' : 'danger' %>"><%= !@info[:server_down] ? 'ON' : 'OFF' %></span></div>
+  </div>
+  <div class="horizontal-expand">
+    <%= erb :'monitoring-details' %>
+  </div>
+<% end %>
+
+<% unless at_least_one_server %>
+  <div class="d-flex justify-content-center horizontal-expand bg-light m-1">
+    <div class="ml-4 p-2 col-4 justify-content-center bg-secondary">No servers running</div>
+  </div>
+<% end %>

@@ -1,0 +1,13 @@
+[Install]
+WantedBy=multi-user.target
+
+[Unit]
+Description=OHD Admin Wrapper
+
+[Service]
+User=wrapper-user
+Type=simple
+WorkingDirectory=/home/wrapper-user/ohd-admin-wrapper/admin-interface
+ExecStartPre=/home/wrapper-user/.rbenv/bin/rbenv exec bundle install
+ExecStart=/home/wrapper-user/.rbenv/bin/rbenv exec bundle exec ruby lib/webapp.rb
+Restart=always

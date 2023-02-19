@@ -1,0 +1,329 @@
+/* Element border helper */
+/** {
+  border: 1px solid #f00 !important;
+}*/
+
+.disabled {
+  background: #36423e !important;
+}
+
+div {
+  display: -webkit-flex; /* Safari */
+  -webkit-align-items: center; /* Safari 7.0+ */
+  display: flex;
+  align-items: center;
+}
+
+.center-just-left {
+  text-align: left;
+  margin: auto;
+}
+
+.monospace-font {
+  font-family: 'Inconsolata', monospace !important;
+}
+
+.normal-font {
+  font-family: 'Oswald', sans-serif;
+}
+
+.vertical-align {
+  align-items: center !important;
+}
+
+.horizontal-expand {
+  width: 100% !important;
+}
+
+.vertical-expand {
+  height: 100% !important;
+}
+
+.horizontal-auto {
+  width: auto !important;
+}
+
+.fit-content {
+  width: 1px !important;
+  flex: 1 1 auto !important;
+}
+
+.img-small {
+  width: 72px !important;
+  height: auto !important;
+}
+
+.modal-title {
+  margin: 0 auto;
+}
+
+.blur {
+  filter: blur(6px);
+  -moz-filter: blur(6px);
+  -webkit-filter: blur(6px);
+  -o-filter: blur(6px);
+}
+
+.row.no-pad {
+  margin-right:-15;
+  margin-left:-15;
+}
+.row.no-pad > [class*='col-'] {
+  padding-right:-15;
+  padding-left:-15;
+}
+
+.relative {
+  position: relative;
+}
+
+.sticky-t {
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  top: 0px;
+}
+
+.pad-t {
+  padding-top: 64px;
+}
+
+.pad-b {
+  padding-bottom: 64px;
+}
+
+.mar-b {
+  margin-bottom: 64px;
+}
+
+.color-monokai {
+  background: #272822;
+  color: #f8f8f2;
+}
+
+.config-file {
+  height: 400px;
+  width: 100%;
+  white-space: pre;
+}
+
+.pre {
+  white-space: pre;
+}
+
+.tooltip-inner {
+  max-width: 350px;
+  width: inherit;
+}
+
+/* Pushy */
+.pushy {
+  overflow-x: hidden;
+  width: 250px; /* Keep horizontal scrollbar from appearing */
+}
+
+/* Change width to 250px */
+.pushy-left{
+    transform: translate3d(-250px,0,0); /* Updated the values */
+    /* Don't forget the vendor prefixes */
+}
+
+.pushy-open-left #container,
+.pushy-open-left .push {
+    transform: translate3d(250px, 0, 0); /* Updated the values */
+}
+
+.pushy-right {
+    transform: translate3d(250px, 0, 0); /* Updated the values */
+    /* Don't forget the vendor prefixes */
+}
+
+.pushy-open-right #container,
+.pushy-open-right .push {
+    transform: translate3d(-250px, 0, 0); /* Updated the values */
+    /* Don't forget the vendor prefixes */
+}
+
+.pushy-submenu > ul {
+  padding-inline-start: 22px; /* Ensure bullets stay visible when zooming out */
+}
+
+/* Log */
+.log {
+  width: 96%;
+  height: 300px;
+  overflow-y: scroll;
+  overflow-x: scroll;
+}
+
+.log-sm {
+  height: 150px;
+}
+
+.log-lg {
+  height: 600px;
+}
+
+.logspan {
+  font-family: 'Inconsolata', monospace !important;
+  font-size: 12px;
+  text-align: left;
+  width: 100%;
+  color: black;
+  white-space: pre;
+  overflow: visible;
+  -ms-word-wrap: normal;
+  word-wrap: normal;
+}
+
+/* Pushy sidebar */
+.pushy-link { margin-left: 1px; }
+/* Ensure pushy doesn't summon the horizontal scrollbar */
+html, body{
+    overflow-x: hidden;
+    height: 100%;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Transparency for toasts */
+#toast-container {
+  opacity: .8;
+}
+
+/* --- Dark theme improvements --- */
+/* Less-bright font */
+* {
+  color: #bcbcbc !important;
+}
+/* Less-bright input background */
+input, textarea, .logspan, .log {
+  background-color: #405151 !important;
+  color: #bdae9f !important;
+}
+
+input {
+  border: 1px !important;
+  border-color: #99A !important;
+  border-style: solid !important;
+}
+::-webkit-input-placeholder { /* WebKit browsers */
+  color: #BBB !important;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+  color: #BBB !important;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+  color: #BBB !important;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+  color: #BBB !important;
+}
+
+/* Less-bright scrollbars */
+::-webkit-scrollbar-track-piece, ::-webkit-scrollbar, ::-webkit-scrollbar-corner {
+  background: #777;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #444;
+}
+
+.bg-dark, .bg-success, .badge-success, .btn-outline-success:hover, .btn-success:not(:hover) {
+  background-color: #13765d !important;
+}
+
+.badge-warning, .btn-outline-warning:hover, .btn-warning:not(:hover) {
+  background-color: #976920 !important;
+}
+
+.bg-danger, .badge-danger, .btn-danger:not(:hover) {
+  background-color: #ac3529 !important;
+}
+
+.bg-info, .badge-info, .btn-outline-info:hover, .btn-info:not(:hover) {
+  background-color: #0b5c93 !important;
+}
+
+.bg-primary, .badge-primary, .btn-outline-primary:hover, .btn-primary:not(:hover) {
+  background-color: #203348 !important;
+}
+
+.btn-primary {
+  border-color: #8d8d8d !important;
+}
+
+.btn-secondary {
+  border-color: #8d8d8d !important;
+}
+
+.btn-dark {
+  background-color: #121314 !important;
+}
+
+/* Config changes */
+.config-changed {
+  border-color: #f2a600 !important;
+}
+
+/* Toggle switch */
+.custom-control-label::before {
+  background-color: #555;
+  border-color: #555;
+}
+
+.custom-control-label::after {
+  background-color: #19191a !important;
+  border-color: #19191a !important;
+}
+
+/* Link text */
+/* unvisited link */
+:not(li) > a:link {
+  color: #0d88c2 !important;
+}
+
+/* visited link */
+:not(li) > a:visited {
+  color: #635eba !important;
+}
+
+/* mouse over link */
+:not(li) > a:hover {
+  color: #2ea8e1 !important;
+}
+
+/* selected link */
+:not(li) > a:active {
+  color: #1f7ba5 !important;
+}
+
+/* --- End dark theme improvements --- */
+
+/* Sortable */
+#sortable {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width: 60%;
+}
+
+#sortable li {
+  margin: 0 3px 3px 3px;
+  padding: 0.4em;
+  padding-left: 1.5em;
+  font-size: 1.4em;
+  height: 18px;
+}
+
+#sortable li span {
+  position: absolute;
+  margin-left: -1.3em;
+}
+
+#sortable .drag-handle { cursor: move; }
+
+.btn-group-xs > .btn, .btn-xs {
+  padding: .25rem .4rem;
+  font-size: .875rem;
+  line-height: .5;
+  border-radius: .2rem;
+}

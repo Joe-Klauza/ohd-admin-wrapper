@@ -1,0 +1,41 @@
+<% players = @info.nil? ? [] : @info[:rcon_players] || [] %>
+<% players.each do |player| %>
+<%   player['display_name'] = player.dig('steam_info', 'name') || player['name'] %>
+<%   matches = (@info[:a2s_player] || []).select{ |p| p['name'] == player['name'] } %>
+<%   next if matches.empty? %>
+<%   player['duration'] = matches.first['duration'] if matches.size == 1 %>
+<% end %>
+<div class="d-flex flex-column horizontal-expand my-2 mx-4" style="background-color:#43454f">
+  <div class="row horizontal-expand m-1 p-1 align-items-center" style="background-color:#232323">
+    <div class="col-3">Player</div>
+    <div class="col-2">Score</div>
+    <div class="col-2">Duration</div>
+    <div class="col-5"><% if is_admin? %>Admin<% end %></div>
+  </div>
+  <% players.sort_by { |p| [p['score'].to_i, (p['duration'] || ''), p['name']] }.reverse.each_with_index do |player, i| %>
+  <div class="row horizontal-expand m-1 p-1 align-items-center text-white" style="background-color:#<%= i.even? ? '202128' : '272831'%>">
+    <div class="col-3">
+      <%# <% ip_info = player.dig('ip_info', player['ip']).to_h %>
+      <%# <% country_code = ip_info['countryCode'] %>
+      <%# <% region_name = ip_info['regionName'] %>
+      <%# <% city = ip_info['city'] %>
+      <%# <%= ('<span class="mr-1 flag-icon flag-icon-' << country_code << '"></span> ') if country_code %>
+      <<% if player['unique_id'].nil? %>span<% else %>a target="<%= !@use_steam_urls ? '_blank' : '' %>" href="<%= !@use_steam_urls ? 'https://steamcommunity.com/profiles/' : 'steam://url/SteamIDPage/' %><%= player['unique_id'] %>" <% end %>>
+        <img src="<%= player.dig('steam_info', 'avatar') || '/custom/missing.png' %>" width="32" height="32">
+        <%= CGI.escapeHTML player['display_name'] %>
+      </<% if player['unique_id'].nil? %>span<% else %>a<% end %>>
+    </div>
+    <div class="col-2"><%= player['score'] %></div>
+    <div class="col-2"><%= player['duration'] %></div>
+    <div class="col-5">
+      <% if is_moderator? %>
+        <button class="btn btn-warning m-1" data-toggle="modal" data-target="#confirm_modal" onclick="confirmModal('Kick <%= "#{CGI.escapeHTML player['display_name']} (#{player['unique_id']})" %>', 'Are you sure you want to kick <%= "#{player['display_name']} (#{player['unique_id']})" %>?', `playerKick('<%= @id %>', '<%= player['id'] %>', $('#confirm-modal-input').val())`, `failureToast('Failed to kick player.'`, '&amp;quot;Ban Reason&amp;quot;');">Kick</button>
+        <button class="btn btn-danger m-1" data-toggle="modal" data-target="#confirm_modal" onclick="confirmModal('Ban <%= "#{CGI.escapeHTML player['display_name']} (#{player['unique_id']})" %>', 'Are you sure you want to ban <%= "#{player['display_name']} (#{player['unique_id']})" %>?', `playerBan('<%= @id %>', '<%= player['id'] %>', $('#confirm-modal-input').val())`, `failureToast('Failed to ban player.'`, '&amp;quot;Ban Reason&amp;quot; [minutes]');">Ban</button>
+        <small class="ml-1">
+          <%# <%= "#{country_code} ➤ #{region_name} ➤ #{city}" %>
+        </small>
+      <% end %>
+    </div>
+  </div>
+  <% end %>
+</div>

@@ -1,0 +1,11 @@
+<% @daemons.reject{|_,d| d.nil? }.select{|id, daemon| daemon.server_running? }.sort_by {|_, daemon| daemon.config['server-config-name'] }.each do |id, daemon| %>
+<div class="horizontal-expand d-flex justify-content-between">
+  <a href="#" class="p-2 col-11 dropdown-item d-flex justify-content-between" onclick="loadActiveServerConfig('<%= id %>');" style="padding: 0 0">
+    <div class="col-10" style="font-size: small; padding: 0;"><%= daemon.config['server-config-name'] %></div>
+    <div class="col-2" style="font-size: small; padding: 0;"><%= "[#{daemon.active_game_port}]" %></div>
+  </a>
+  <a href="#" class="py-2 col-1 dropdown-item text-center" onclick="serverControl('stop', '<%= id %>');reloadControlStatus();" style="padding: 0 0">
+    <span aria-hidden="true">&times;</span>
+  </a>
+</div>
+<% end %>
