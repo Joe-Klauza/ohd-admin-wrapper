@@ -979,7 +979,7 @@ class AdminWrapperSite < Sinatra::Base
     config = get_config(params['config-id'])
     file_type = params['file']
     halt(400, "File type not found: #{file_type}") unless CONFIG_FILES[file_type.to_sym]
-    file = ERB.new(CONFIG_FILES[:bans_cfg][:local_erb]).result(binding)
+    file = ERB.new(CONFIG_FILES[file_type.to_sym][:local_erb]).result(binding)
     halt(400, "File not found: #{file.sub(USER_HOME, '~')}") unless File.exist? file
     File.read(file)
   end
@@ -989,7 +989,7 @@ class AdminWrapperSite < Sinatra::Base
     config = get_config(config_id)
     file_type = params['file']
     halt(400, "File type not found: #{file_type}") unless CONFIG_FILES[file_type.to_sym]
-    file = ERB.new(CONFIG_FILES[:bans_cfg][:local_erb]).result(binding)
+    file = ERB.new(CONFIG_FILES[file_type.to_sym][:local_erb]).result(binding)
     content = params['content']
     content << "\n" unless content.end_with? "\n"
     FileUtils.mkdir_p(File.dirname(file))
