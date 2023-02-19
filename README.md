@@ -34,10 +34,10 @@ Local server features:
   - Editable config files (Paste your current settings here! Matching settings above will override what was entered.)
     - `Game.ini`
     - `Engine.ini`
-    - `Admins.txt`
-    - `MapCycle.txt`
-    - `Bans.json`
-    - Local copies of these files are stored in `ohd-admin-wrapper/server-config`. Before launching the server, the manual config is applied to the `server-config` files, then those files are copied into the appropriate places in order for the server to use them. This prevents the server from overwriting our changes. After the server closes, any new bans are added to the local copy.
+    - `Admins.cfg`
+    - `MapCycle.cfg`
+    - `Bans.cfg`
+    - Local copies of these files are stored in `ohd-admin-wrapper/server-config`. Before launching the server, the manual config is applied to the `server-config` files, then those files are copied into the appropriate places in order for the server to use them. This prevents the server from overwriting our changes.
 - **Server Control page**
   - Select from saved configs or running servers
   - Server status
@@ -97,11 +97,12 @@ Command-line parameters:
 
 ### Prerequisites
 
-- Windows (10 tested) or Linux (Debian 9 tested)
+- Windows (11 tested) or Linux (Debian 11 tested)
 - A Ruby `3.1.2`+ (check with `ruby -v`) installation with the Bundler gem (`gem install bundler`). I recommend [rbenv](https://github.com/rbenv/rbenv) to manage Ruby installations on Linux and [RubyInstaller for Windows](https://rubyinstaller.org/downloads/) to install Ruby on Windows.
 - If using this tool to run a server, grab a portable version of [SteamCMD](https://developer.valvesoftware.com/wiki/SteamCMD#Downloading_SteamCMD) (we'll extract it to `ohd-admin-wrapper/steamcmd/installation`)
   - [Windows SteamCMD](https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip)
   - [Linux SteamCMD](https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz)
+- Other OHD-specific prerequisites may be required, e.g. `apt install lib32gcc-s1` on Debian 11
 
 ### Installation
 
