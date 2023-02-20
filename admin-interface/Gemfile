@@ -1,0 +1,19 @@
+source 'https://rubygems.org'
+
+gem 'bcrypt'
+gem 'bindata'
+gem 'file-tail'
+# gem 'geocoder'
+gem 'inifile'
+gem 'oj'
+gem 'openssl'
+gem 'pry'
+gem 'sinatra'
+gem 'sys-proctable'
+gem 'sysrandom'
+gem 'toml-rb'
+gem 'unicode-display_width'
+gem 'rubyzip', '~> 2.3.0'
+
+
+gem "webrick", "~> 1.7"
